@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.Extensions.DependencyInjection;
 using MixedDbUnitTests.Persistance;
 using System;
 
@@ -8,19 +7,40 @@ namespace MixedDbUnitTests.Tests
 {
     public abstract class TestBase
     {
+        private bool useSqlite;
+
+        public void UseSqlite()
+        {
+            useSqlite = true;
+        }
+
         public SampleDbContext GetDbContext()
         {
-            var serviceCollection = new ServiceCollection();
-            serviceCollection.AddDbContext<SampleDbContext>(o =>
+            DbContextOptionsBuilder builder = new DbContextOptionsBuilder();
+            if (!useSqlite)
             {
-                o.UseInMemoryDatabase(Guid.NewGuid().ToString()).ConfigureWarnings(w =>
-                {
-                    w.Ignore(InMemoryEventId.TransactionIgnoredWarning);
-                }).EnableSensitiveDataLogging(true);
-            });
+                builder.UseInMemoryDatabase(Guid.NewGuid().ToString()).ConfigureWarnings(w =>
+                    {
+                        w.Ignore(InMemoryEventId.TransactionIgnoredWarning);
+                    }).EnableSensitiveDataLogging(true);
+            }
+            else
+            {
+                builder.UseSqlite("DataSource=:memory:", x =>
+                    {
+                        x.SuppressForeignKeyEnforcement();
+                    }).EnableSensitiveDataLogging(true);
+            }
 
-            var serviceProvider = serviceCollection.BuildServiceProvider();
-            return serviceProvider.GetService<SampleDbContext>();
+            var dbContext = new SampleDbContext(builder.Options);
+            if (useSqlite)
+            {
+                dbContext.Database.OpenConnection();
+            }
+
+            dbContext.Database.EnsureCreated();
+
+            return dbContext;
         }
     }
 }
