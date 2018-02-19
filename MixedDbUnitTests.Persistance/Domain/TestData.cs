@@ -6,7 +6,7 @@ namespace MixedDbUnitTests.Persistance.Domain
     {
         public int Id { get; set; }
 
-        public string Data { get; set; }
+        public string Text { get; set; }
 
         public bool IsDeleted { get; set; }
     }

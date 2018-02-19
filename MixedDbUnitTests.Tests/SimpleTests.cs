@@ -1,5 +1,8 @@
-﻿using MixedDbUnitTests.Persistance.Domain;
+﻿using Dapper;
+using Microsoft.EntityFrameworkCore;
+using MixedDbUnitTests.Persistance.Domain;
 using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace MixedDbUnitTests.Tests
@@ -13,7 +16,7 @@ namespace MixedDbUnitTests.Tests
             var context = GetDbContext();
             context.TestDatas.Add(new TestData
             {
-                Data = "Test"
+                Text = "Test"
             });
             context.SaveChanges();
 
@@ -22,7 +25,7 @@ namespace MixedDbUnitTests.Tests
 
             // Assert
             Assert.Single(data);
-            Assert.Contains(data, d => d.Data == "Test");
+            Assert.Contains(data, d => d.Text == "Test");
         }
 
         [Fact]
@@ -32,12 +35,12 @@ namespace MixedDbUnitTests.Tests
             var context = GetDbContext();
             context.TestDatas.Add(new TestData
             {
-                Data = "Deleted",
+                Text = "Deleted",
                 IsDeleted = true
             });
             context.TestDatas.Add(new TestData
             {
-                Data = "Test",
+                Text = "Test",
                 IsDeleted = false
             });
             context.SaveChanges();
@@ -46,6 +49,50 @@ namespace MixedDbUnitTests.Tests
             var data = context.TestDatas.ToList();
             Assert.Single(data);
             Assert.All(data, d => Assert.False(d.IsDeleted));
+        }
+
+        [Fact]
+        public void ShouldBeAbleToIgnoreComplexDeletedEntity()
+        {
+            // Prepare
+            var context = GetDbContext();
+            context.ComlexDatas.Add(new ComplexData
+            {
+                Text = "Deleted"
+            });
+            context.ComlexDatas.Add(new ComplexData
+            {
+                Text = "Test",
+                IsDeleted = false
+            });
+            context.SaveChanges();
+            context.ComlexDatas.Remove(context.ComlexDatas.FirstOrDefault());
+            context.SaveChanges();
+
+            // Execute
+            var data = context.ComlexDatas.ToList();
+            Assert.Single(data);
+            Assert.All(data, d => Assert.False(d.IsDeleted));
+        }
+
+        [Fact]
+        public async Task ShouldNotWork()
+        {
+            // Prepare
+            var context = GetDbContext();
+            context.TestDatas.Add(new TestData
+            {
+                Text = "Test",
+                IsDeleted = false
+            });
+            context.SaveChanges();
+            
+            // Execute
+            var data = await context.Database.GetDbConnection()
+                .QueryAsync<TestBase>(@"select * from TestBase");
+
+            // Assert
+            Assert.Single(data);
         }
     }
 }
