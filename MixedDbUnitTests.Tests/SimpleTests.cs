@@ -76,7 +76,28 @@ namespace MixedDbUnitTests.Tests
         }
 
         [Fact]
-        public async Task ShouldNotWork()
+        public async Task ShouldNotBeAbleToWorkCorrectly()
+        {
+            var context = GetDbContext();
+            context.TestDatas.Add(new TestData
+            {
+                Text = "Parent",
+                IsDeleted = false,
+                Child = null
+            });
+
+            // Will not fail even though Child is required.
+            context.SaveChanges();
+
+            // Execute
+            // This fails because in-memory-database does not support SQL.
+            await Assert.ThrowsAsync<System.InvalidOperationException>(
+                () => context.Database.GetDbConnection()
+                    .QueryAsync<TestData>(@"select * from TestDatas"));
+        }
+
+        [Fact]
+        public async Task ShouldWork()
         {
             // Prepare
             UseSqlite();
@@ -84,11 +105,17 @@ namespace MixedDbUnitTests.Tests
             var context = GetDbContext();
             context.TestDatas.Add(new TestData
             {
-                Text = "Test",
-                IsDeleted = false
+                Text = "Parent",
+                IsDeleted = false,
+                Child = new ChildData
+                {
+                    Text = "Child"
+                }
             });
+
+            // Checks if Child property is correctly populated
             context.SaveChanges();
-            
+
             // Execute
             var data = await context.Database.GetDbConnection()
                 .QueryAsync<TestData>(@"select * from TestDatas");
@@ -137,6 +164,31 @@ namespace MixedDbUnitTests.Tests
             }
 
             context.SaveChanges();
+        }
+
+        /// <summary>
+        /// SQL allows you to check if constrains are set correctly.
+        /// </summary>
+        [Fact]
+        public void ShouldFailWhenIncludeIsNotUsed()
+        {
+            UseSqlite();
+
+            var context = GetDbContext();
+            var child = new ChildData
+            {
+                Text = "Child"
+            };
+            context.ChildDatas.Add(child);
+            context.SaveChanges();
+
+            context.TestDatas.Add(new TestData
+            {
+                Text = "Test",
+                ChildId = child.Id + 1
+            });
+
+            Assert.Throws<DbUpdateException>(() => context.SaveChanges());
         }
     }
 }

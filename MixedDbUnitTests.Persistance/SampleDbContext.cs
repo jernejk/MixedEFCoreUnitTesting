@@ -12,6 +12,7 @@ namespace MixedDbUnitTests.Persistance
         }
 
         public DbSet<TestData> TestDatas { get; set; }
+        public DbSet<ChildData> ChildDatas { get; set; }
         public DbSet<ComplexData> ComlexDatas { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

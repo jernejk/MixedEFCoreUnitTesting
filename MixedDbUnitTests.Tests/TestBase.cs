@@ -26,15 +26,15 @@ namespace MixedDbUnitTests.Tests
             }
             else
             {
-                builder.UseSqlite("DataSource=:memory:", x =>
-                    {
-                        x.SuppressForeignKeyEnforcement();
-                    }).EnableSensitiveDataLogging(true);
+                builder.UseSqlite("DataSource=:memory:", x => { })
+                    .EnableSensitiveDataLogging(true);
             }
 
             var dbContext = new SampleDbContext(builder.Options);
             if (useSqlite)
             {
+                // SQLite needs to open connection to the DB.
+                // Not required for in-memory-database and MS SQL.
                 dbContext.Database.OpenConnection();
             }
 
