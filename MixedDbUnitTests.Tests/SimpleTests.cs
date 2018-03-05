@@ -14,7 +14,7 @@ namespace MixedDbUnitTests.Tests
         {
             // Prepare
             var context = GetDbContext();
-            context.TestDatas.Add(new TestData
+            context.TestDatas.Add(new ParentData
             {
                 Text = "Test"
             });
@@ -33,12 +33,12 @@ namespace MixedDbUnitTests.Tests
         {
             // Prepare
             var context = GetDbContext();
-            context.TestDatas.Add(new TestData
+            context.TestDatas.Add(new ParentData
             {
                 Text = "Deleted",
                 IsDeleted = true
             });
-            context.TestDatas.Add(new TestData
+            context.TestDatas.Add(new ParentData
             {
                 Text = "Test",
                 IsDeleted = false
@@ -51,35 +51,35 @@ namespace MixedDbUnitTests.Tests
             Assert.All(data, d => Assert.False(d.IsDeleted));
         }
 
-        [Fact]
-        public void ShouldBeAbleToIgnoreComplexDeletedEntity()
-        {
-            // Prepare
-            var context = GetDbContext();
-            context.ComlexDatas.Add(new ComplexData
-            {
-                Text = "Deleted"
-            });
-            context.ComlexDatas.Add(new ComplexData
-            {
-                Text = "Test",
-                IsDeleted = false
-            });
-            context.SaveChanges();
-            context.ComlexDatas.Remove(context.ComlexDatas.FirstOrDefault());
-            context.SaveChanges();
+        //[Fact]
+        //public void ShouldBeAbleToIgnoreComplexDeletedEntity()
+        //{
+        //    // Prepare
+        //    var context = GetDbContext();
+        //    context.ComlexDatas.Add(new ComplexData
+        //    {
+        //        Text = "Deleted"
+        //    });
+        //    context.ComlexDatas.Add(new ComplexData
+        //    {
+        //        Text = "Test",
+        //        IsDeleted = false
+        //    });
+        //    context.SaveChanges();
+        //    context.ComlexDatas.Remove(context.ComlexDatas.FirstOrDefault());
+        //    context.SaveChanges();
 
-            // Execute
-            var data = context.ComlexDatas.ToList();
-            Assert.Single(data);
-            Assert.All(data, d => Assert.False(d.IsDeleted));
-        }
+        //    // Execute
+        //    var data = context.ComlexDatas.ToList();
+        //    Assert.Single(data);
+        //    Assert.All(data, d => Assert.False(d.IsDeleted));
+        //}
 
         [Fact]
         public async Task ShouldNotBeAbleToWorkCorrectly()
         {
             var context = GetDbContext();
-            context.TestDatas.Add(new TestData
+            context.TestDatas.Add(new ParentData
             {
                 Text = "Parent",
                 IsDeleted = false,
@@ -93,7 +93,7 @@ namespace MixedDbUnitTests.Tests
             // This fails because in-memory-database does not support SQL.
             await Assert.ThrowsAsync<System.InvalidOperationException>(
                 () => context.Database.GetDbConnection()
-                    .QueryAsync<TestData>(@"select * from TestDatas"));
+                    .QueryAsync<ParentData>(@"select * from TestDatas"));
         }
 
         [Fact]
@@ -103,7 +103,7 @@ namespace MixedDbUnitTests.Tests
             UseSqlite();
 
             var context = GetDbContext();
-            context.TestDatas.Add(new TestData
+            context.TestDatas.Add(new ParentData
             {
                 Text = "Parent",
                 IsDeleted = false,
@@ -118,7 +118,7 @@ namespace MixedDbUnitTests.Tests
 
             // Execute
             var data = await context.Database.GetDbConnection()
-                .QueryAsync<TestData>(@"select * from TestDatas");
+                .QueryAsync<ParentData>(@"select * from TestDatas");
 
             // Assert
             Assert.Single(data);
@@ -135,7 +135,7 @@ namespace MixedDbUnitTests.Tests
 
             for (int i = 0; i < 100000; ++i)
             {
-                context.TestDatas.Add(new TestData
+                context.TestDatas.Add(new ParentData
                 {
                     Text = "Test",
                     IsDeleted = false
@@ -156,7 +156,7 @@ namespace MixedDbUnitTests.Tests
             var context = GetDbContext();
             for (int i = 0; i < 100000; ++i)
             {
-                context.TestDatas.Add(new TestData
+                context.TestDatas.Add(new ParentData
                 {
                     Text = "Test",
                     IsDeleted = false
@@ -182,7 +182,7 @@ namespace MixedDbUnitTests.Tests
             context.ChildDatas.Add(child);
             context.SaveChanges();
 
-            context.TestDatas.Add(new TestData
+            context.TestDatas.Add(new ParentData
             {
                 Text = "Test",
                 ChildId = child.Id + 1

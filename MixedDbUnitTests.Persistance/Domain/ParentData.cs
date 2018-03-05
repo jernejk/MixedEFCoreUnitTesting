@@ -2,7 +2,7 @@
 
 namespace MixedDbUnitTests.Persistance.Domain
 {
-    public class TestData
+    public class ParentData
     {
         public int Id { get; set; }
 
