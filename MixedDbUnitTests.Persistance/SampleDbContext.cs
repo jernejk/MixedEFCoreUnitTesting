@@ -10,7 +10,7 @@ namespace MixedDbUnitTests.Persistance
         {
         }
 
-        public DbSet<ParentData> Parents { get; set; }
-        public DbSet<ChildData> Childs { get; set; }
+        public DbSet<Parent> Parents { get; set; }
+        public DbSet<Child> Children { get; set; }
     }
 }

@@ -19,10 +19,10 @@ namespace MixedDbUnitTests.Tests
         {
             // Prepare
             var context = GetDbContext();
-            context.Parents.Add(new ParentData
+            context.Parents.Add(new Parent
             {
                 Name = "Parent name",
-                Child = new ChildData
+                Child = new Child
                 {
                     Name = "Child name"
                 }
@@ -35,6 +35,7 @@ namespace MixedDbUnitTests.Tests
             // Assert
             Assert.Single(data);
             Assert.Contains(data, d => d.Name == "Parent name");
+            Assert.Contains(data, d => d.Child.Name == "Child name");
         }
 
         [Fact]
@@ -42,21 +43,20 @@ namespace MixedDbUnitTests.Tests
         {
             // Prepare
             var context = GetDbContext();
-            context.Parents.Add(new ParentData
+            context.Parents.Add(new Parent
             {
                 Name = "Parent name",
-                Child = new ChildData
+                Child = new Child
                 {
                     Name = "Child name"
                 }
             });
 
-            // Checks if Child property is correctly populated
             context.SaveChanges();
 
             // Execute
             var result = await context.Database.GetDbConnection()
-                .QueryAsync<ParentData>(@"select * from Parents");
+                .QueryAsync<Parent>(@"select * from Parents");
 
             // Assert
             Assert.Single(result);
@@ -71,23 +71,20 @@ namespace MixedDbUnitTests.Tests
         {
             // Prepare
             var context = GetDbContext();
-            var child = new ChildData
-            {
-                Name = "Child name"
-            };
-            context.Childs.Add(child);
-            context.SaveChanges();
 
             // Add a child with non-existing ID.
-            context.Parents.Add(new ParentData
+            context.Parents.Add(new Parent
             {
                 Name = "Parent name",
-                ChildId = child.Id + 1
+                ChildId = 1
             });
 
             // Execute and assert
             // Will throw expected exception.
-            Assert.Throws<DbUpdateException>(() => context.SaveChanges());
+            Assert.Throws<DbUpdateException>(
+                () => context.SaveChanges());
+
+            Assert.Empty(context.Parents.ToList());
         }
 
         /// <summary>
@@ -98,12 +95,12 @@ namespace MixedDbUnitTests.Tests
         public void PerformanceTestSqlite()
         {
             var context = GetDbContext();
-            for (int i = 0; i < 1000; ++i)
+            for (int i = 0; i < 10000; ++i)
             {
-                context.Parents.Add(new ParentData
+                context.Parents.Add(new Parent
                 {
                     Name = "Parent name",
-                    Child = new ChildData
+                    Child = new Child
                     {
                         Name = "Child name"
                     }

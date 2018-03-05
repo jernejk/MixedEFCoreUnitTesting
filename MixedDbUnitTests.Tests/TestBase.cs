@@ -9,16 +9,12 @@ namespace MixedDbUnitTests.Tests
     {
         private bool useSqlite;
 
-        public void UseSqlite()
-        {
-            useSqlite = true;
-        }
-
         public SampleDbContext GetDbContext()
         {
             DbContextOptionsBuilder builder = new DbContextOptionsBuilder();
             if (!useSqlite)
             {
+                // Use In-Memory DB.
                 builder.UseInMemoryDatabase(Guid.NewGuid().ToString()).ConfigureWarnings(w =>
                     {
                         w.Ignore(InMemoryEventId.TransactionIgnoredWarning);
@@ -26,6 +22,7 @@ namespace MixedDbUnitTests.Tests
             }
             else
             {
+                // Use Sqlite DB.
                 builder.UseSqlite("DataSource=:memory:", x => { })
                     .EnableSensitiveDataLogging(true);
             }
@@ -41,6 +38,11 @@ namespace MixedDbUnitTests.Tests
             dbContext.Database.EnsureCreated();
 
             return dbContext;
+        }
+
+        public void UseSqlite()
+        {
+            useSqlite = true;
         }
     }
 }
