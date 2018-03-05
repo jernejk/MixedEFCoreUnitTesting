@@ -19,22 +19,22 @@ namespace MixedDbUnitTests.Tests
         {
             // Prepare
             var context = GetDbContext();
-            context.TestDatas.Add(new ParentData
+            context.Parents.Add(new ParentData
             {
-                Text = "Parent data",
+                Name = "Parent name",
                 Child = new ChildData
                 {
-                    Text = "Child data"
+                    Name = "Child name"
                 }
             });
             context.SaveChanges();
 
             // Execute
-            var data = context.TestDatas.ToList();
+            var data = context.Parents.ToList();
 
             // Assert
             Assert.Single(data);
-            Assert.Contains(data, d => d.Text == "Parent data");
+            Assert.Contains(data, d => d.Name == "Parent name");
         }
 
         [Fact]
@@ -42,12 +42,12 @@ namespace MixedDbUnitTests.Tests
         {
             // Prepare
             var context = GetDbContext();
-            context.TestDatas.Add(new ParentData
+            context.Parents.Add(new ParentData
             {
-                Text = "Parent data",
+                Name = "Parent name",
                 Child = new ChildData
                 {
-                    Text = "Child data"
+                    Name = "Child name"
                 }
             });
 
@@ -56,7 +56,7 @@ namespace MixedDbUnitTests.Tests
 
             // Execute
             var result = await context.Database.GetDbConnection()
-                .QueryAsync<ParentData>(@"select * from TestDatas");
+                .QueryAsync<ParentData>(@"select * from Parents");
 
             // Assert
             Assert.Single(result);
@@ -73,15 +73,15 @@ namespace MixedDbUnitTests.Tests
             var context = GetDbContext();
             var child = new ChildData
             {
-                Text = "Child"
+                Name = "Child name"
             };
-            context.ChildDatas.Add(child);
+            context.Childs.Add(child);
             context.SaveChanges();
 
             // Add a child with non-existing ID.
-            context.TestDatas.Add(new ParentData
+            context.Parents.Add(new ParentData
             {
-                Text = "Test",
+                Name = "Parent name",
                 ChildId = child.Id + 1
             });
 
@@ -100,12 +100,12 @@ namespace MixedDbUnitTests.Tests
             var context = GetDbContext();
             for (int i = 0; i < 1000; ++i)
             {
-                context.TestDatas.Add(new ParentData
+                context.Parents.Add(new ParentData
                 {
-                    Text = "Parent data",
+                    Name = "Parent name",
                     Child = new ChildData
                     {
-                        Text = "Child data"
+                        Name = "Child name"
                     }
                 });
             }
