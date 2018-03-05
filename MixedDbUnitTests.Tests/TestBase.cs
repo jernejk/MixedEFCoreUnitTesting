@@ -12,19 +12,18 @@ namespace MixedDbUnitTests.Tests
         public SampleDbContext GetDbContext()
         {
             DbContextOptionsBuilder builder = new DbContextOptionsBuilder();
-            if (!useSqlite)
+            if (useSqlite)
             {
-                // Use In-Memory DB.
-                builder.UseInMemoryDatabase(Guid.NewGuid().ToString()).ConfigureWarnings(w =>
-                    {
-                        w.Ignore(InMemoryEventId.TransactionIgnoredWarning);
-                    }).EnableSensitiveDataLogging(true);
+                // Use Sqlite DB.
+                builder.UseSqlite("DataSource=:memory:", x => { });
             }
             else
             {
-                // Use Sqlite DB.
-                builder.UseSqlite("DataSource=:memory:", x => { })
-                    .EnableSensitiveDataLogging(true);
+                // Use In-Memory DB.
+                builder.UseInMemoryDatabase(Guid.NewGuid().ToString()).ConfigureWarnings(w =>
+                {
+                    w.Ignore(InMemoryEventId.TransactionIgnoredWarning);
+                });
             }
 
             var dbContext = new SampleDbContext(builder.Options);
