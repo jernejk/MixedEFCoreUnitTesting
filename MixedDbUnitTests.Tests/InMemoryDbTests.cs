@@ -92,6 +92,7 @@ namespace MixedDbUnitTests.Tests
         /// Use it when constrains are not required.
         /// </summary>
         [Fact]
+        [Trait("Performance", "InMemory")]
         public void PerformanceTestInMemory()
         {
             var context = GetDbContext();

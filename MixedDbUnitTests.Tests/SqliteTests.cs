@@ -92,6 +92,7 @@ namespace MixedDbUnitTests.Tests
         /// Use it with SQL queries and when testing for constrains.
         /// </summary>
         [Fact]
+        [Trait("Performance", "SQLite")]
         public void PerformanceTestSqlite()
         {
             var context = GetDbContext();
