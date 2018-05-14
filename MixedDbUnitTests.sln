@@ -1,13 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2027
+VisualStudioVersion = 15.0.27130.2036
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MixedDbUnitTests", "MixedDbUnitTests\MixedDbUnitTests.csproj", "{0D118B01-CDF3-4522-834E-2BB328D09FB5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MixedDbUnitTests.Web", "MixedDbUnitTests\MixedDbUnitTests.Web.csproj", "{0D118B01-CDF3-4522-834E-2BB328D09FB5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MixedDbUnitTests.Persistance", "MixedDbUnitTests.Persistance\MixedDbUnitTests.Persistance.csproj", "{25FBED00-ED52-45F6-9C17-FD6713B48C16}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MixedDbUnitTests.Persistance", "MixedDbUnitTests.Persistance\MixedDbUnitTests.Persistance.csproj", "{25FBED00-ED52-45F6-9C17-FD6713B48C16}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MixedDbUnitTests.Tests", "MixedDbUnitTests.Tests\MixedDbUnitTests.Tests.csproj", "{82A18D30-1EC1-4538-AD66-75B345F00438}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MixedDbUnitTests.Tests", "MixedDbUnitTests.Tests\MixedDbUnitTests.Tests.csproj", "{82A18D30-1EC1-4538-AD66-75B345F00438}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
