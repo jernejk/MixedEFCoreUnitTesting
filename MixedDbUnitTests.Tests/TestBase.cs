@@ -25,7 +25,7 @@ namespace MixedDbUnitTests.Tests
                     w.Ignore(InMemoryEventId.TransactionIgnoredWarning);
                 });
             }
-
+            
             var dbContext = new SampleDbContext(builder.Options);
             if (useSqlite)
             {

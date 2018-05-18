@@ -1,10 +1,12 @@
-﻿namespace MixedDbUnitTests.Persistance.Domain
+﻿using System;
+
+namespace MixedDbUnitTests.Persistance.Domain
 {
     public class Parent
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
         public string Name { get; set; }
-        public int ChildId { get; set; }
+        public Guid ChildId { get; set; }
         public virtual Child Child { get; set; }
     }
 }
