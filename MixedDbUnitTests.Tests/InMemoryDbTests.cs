@@ -1,8 +1,7 @@
-﻿using Dapper;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using MixedDbUnitTests.Persistance.Domain;
+using System;
 using System.Linq;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace MixedDbUnitTests.Tests
@@ -19,8 +18,10 @@ namespace MixedDbUnitTests.Tests
         {
             // Prepare
             var context = GetDbContext();
+            Guid id = Guid.NewGuid();
             context.Parents.Add(new Parent
             {
+                Id = id,
                 Name = "Parent name",
                 Child = new Child
                 {
@@ -34,17 +35,21 @@ namespace MixedDbUnitTests.Tests
 
             // Assert
             Assert.Single(data);
+            Assert.Contains(data, d => d.Id == id);
             Assert.Contains(data, d => d.Name == "Parent name");
             Assert.Contains(data, d => d.Child.Name == "Child name");
         }
 
         [Fact]
-        public async Task ShouldNotBeAbleToWorkCorrectly()
+        public void ShouldNotBeAbleToExecuteSql()
         {
             // Prepare
             var context = GetDbContext();
+
+            Guid id = Guid.NewGuid();
             context.Parents.Add(new Parent
             {
+                Id = id,
                 Name = "Parent name",
                 Child = new Child
                 {
@@ -55,11 +60,13 @@ namespace MixedDbUnitTests.Tests
             context.SaveChanges();
 
             // Execute
-            var result = await context.Database.GetDbConnection()
-                .QueryAsync<Parent>(@"select * from Parents");
+            var result = context.Parents
+                .FromSql(@"select * from Parents")
+                .ToList();
 
-            // Assert (will not reach)
-            Assert.Single(result);
+            // Assert
+            // This line will never be reached.
+            Assert.Equal(id, result.First().Id);
         }
 
         /// <summary>
@@ -76,7 +83,7 @@ namespace MixedDbUnitTests.Tests
             context.Parents.Add(new Parent
             {
                 Name = "Parent name",
-                ChildId = 1
+                ChildId = Guid.NewGuid()
             });
 
             // Execute and assert
