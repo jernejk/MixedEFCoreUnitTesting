@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MixedDbUnitTests.Persistance.Domain;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -107,7 +108,7 @@ namespace MixedDbUnitTests.Tests
         public async Task PerformanceTestSqlite()
         {
             using var context = await GetDbContext();
-            for (int i = 0; i < 10000; ++i)
+            for (int i = 0; i < Constants.NumberOfEntitiesToAdd; ++i)
             {
                 context.Parents.Add(new Parent
                 {
@@ -119,6 +120,33 @@ namespace MixedDbUnitTests.Tests
                 });
             }
 
+            await context.SaveChangesAsync();
+        }
+
+        /// <summary>
+        /// SQLite is slower than In-memory DB.
+        /// AddRange is faster for SQLite but is the same for in-memory DB.
+        /// </summary>
+        [Fact]
+        [Trait("Performance", "InMemory")]
+        public async Task PerformanceTestBitFaster()
+        {
+            using var context = await GetDbContext();
+
+            var parents = new List<Parent>(Constants.NumberOfEntitiesToAdd);
+            for (int i = 0; i < Constants.NumberOfEntitiesToAdd; ++i)
+            {
+                parents.Add(new Parent
+                {
+                    Name = "Parent name",
+                    Child = new Child
+                    {
+                        Name = "Child name"
+                    }
+                });
+            }
+
+            context.Parents.AddRange(parents);
             await context.SaveChangesAsync();
         }
     }
