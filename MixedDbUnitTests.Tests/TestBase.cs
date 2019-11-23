@@ -2,17 +2,18 @@
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using MixedDbUnitTests.Persistance;
 using System;
+using System.Threading.Tasks;
 
 namespace MixedDbUnitTests.Tests
 {
     public abstract class TestBase
     {
-        private bool useSqlite;
+        private bool _useSqlite;
 
-        public SampleDbContext GetDbContext()
+        public async Task<SampleDbContext> GetDbContext()
         {
             DbContextOptionsBuilder builder = new DbContextOptionsBuilder();
-            if (useSqlite)
+            if (_useSqlite)
             {
                 // Use Sqlite DB.
                 builder.UseSqlite("DataSource=:memory:", x => { });
@@ -27,21 +28,21 @@ namespace MixedDbUnitTests.Tests
             }
             
             var dbContext = new SampleDbContext(builder.Options);
-            if (useSqlite)
+            if (_useSqlite)
             {
                 // SQLite needs to open connection to the DB.
                 // Not required for in-memory-database and MS SQL.
-                dbContext.Database.OpenConnection();
+                await dbContext.Database.OpenConnectionAsync();
             }
 
-            dbContext.Database.EnsureCreated();
+            await dbContext.Database.EnsureCreatedAsync();
 
             return dbContext;
         }
 
         public void UseSqlite()
         {
-            useSqlite = true;
+            _useSqlite = true;
         }
     }
 }

@@ -2,6 +2,7 @@
 using MixedDbUnitTests.Persistance.Domain;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace MixedDbUnitTests.Tests
@@ -14,10 +15,10 @@ namespace MixedDbUnitTests.Tests
         }
 
         [Fact]
-        public void ShouldBeAbleToAddAndGetEntity()
+        public async Task ShouldBeAbleToAddAndGetEntity()
         {
             // Prepare
-            var context = GetDbContext();
+            using var context = await GetDbContext();
             Guid id = Guid.NewGuid();
             context.Parents.Add(new Parent
             {
@@ -28,10 +29,10 @@ namespace MixedDbUnitTests.Tests
                     Name = "Child name"
                 }
             });
-            context.SaveChanges();
+            await context.SaveChangesAsync();
 
             // Execute
-            var data = context.Parents.ToList();
+            var data = await context.Parents.ToListAsync();
 
             // Assert
             Assert.Single(data);
@@ -41,10 +42,11 @@ namespace MixedDbUnitTests.Tests
         }
 
         [Fact]
-        public void ShouldBeAbleToExeuteSql()
+        [Trait("DbDependat", "")]
+        public async Task ShouldBeAbleToExeuteSql()
         {
             // Prepare
-            var context = GetDbContext();
+            using var context = await GetDbContext();
 
             Guid id = Guid.NewGuid();
             context.Parents.Add(new Parent
@@ -57,14 +59,13 @@ namespace MixedDbUnitTests.Tests
                 }
             });
 
-            context.SaveChanges();
+            await context.SaveChangesAsync();
 
             // Execute
-            var result = context.Parents
-                .FromSql(@"select * from Parents")
-                .ToList();
+            var result = await context.Parents
+                .FromSqlRaw("select * from Parents")
+                .ToListAsync();
 
-            // Assert
             // It should get first line and convert byte[] into GUID.
             Assert.Equal(id, result.First().Id);
         }
@@ -74,10 +75,11 @@ namespace MixedDbUnitTests.Tests
         /// Sqlite can check most of simple constrains.
         /// </summary>
         [Fact]
-        public void ShouldFailWhenIncludeIsNotUsed()
+        [Trait("DbDependat", "")]
+        public async Task ShouldFailWhenIncludeIsNotUsed()
         {
             // Prepare
-            var context = GetDbContext();
+            using var context = await GetDbContext();
 
             // Add a child with non-existing ID.
             context.Parents.Add(new Parent
@@ -88,10 +90,12 @@ namespace MixedDbUnitTests.Tests
 
             // Execute and assert
             // Will throw expected exception.
-            Assert.Throws<DbUpdateException>(
-                () => context.SaveChanges());
+            await Assert.ThrowsAsync<DbUpdateException>(
+                () => context.SaveChangesAsync());
 
-            Assert.Empty(context.Parents.ToList());
+            // This line will be asserted only for SQLite.
+            var parents = await context.Parents.ToListAsync();
+            Assert.Empty(parents);
         }
 
         /// <summary>
@@ -100,9 +104,9 @@ namespace MixedDbUnitTests.Tests
         /// </summary>
         [Fact]
         [Trait("Performance", "SQLite")]
-        public void PerformanceTestSqlite()
+        public async Task PerformanceTestSqlite()
         {
-            var context = GetDbContext();
+            using var context = await GetDbContext();
             for (int i = 0; i < 10000; ++i)
             {
                 context.Parents.Add(new Parent
@@ -115,7 +119,7 @@ namespace MixedDbUnitTests.Tests
                 });
             }
 
-            context.SaveChanges();
+            await context.SaveChangesAsync();
         }
     }
 }
