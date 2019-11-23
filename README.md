@@ -1,4 +1,5 @@
-# MixedEFCoreUnitTesting
+# Mixed EF Core unit testing with in-memory and SQLite DBs
+
 When doing unit tests for EF Core, we can use in-memory-database to test functionalities but sometimes we needs to use SQL features. That's where SQLite comes into play.
 
 ## Original content for this source code
