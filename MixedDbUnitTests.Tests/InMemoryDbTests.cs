@@ -62,7 +62,7 @@ namespace MixedDbUnitTests.Tests
 
             await context.SaveChangesAsync();
 
-            // Execute
+            // NOTE: This will fail on InMemory DB because we can't execute SQL.
             var result = await context.Parents
                 .FromSqlRaw("select * from Parents")
                 .ToListAsync();
@@ -90,7 +90,7 @@ namespace MixedDbUnitTests.Tests
             });
 
             // Execute and assert
-            // Will fail because no exception was thrown.
+            // NOTE: Will fail because no exception was thrown.
             await Assert.ThrowsAsync<DbUpdateException>(
                 () => context.SaveChangesAsync());
 
