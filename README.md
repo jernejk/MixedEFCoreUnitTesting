@@ -4,6 +4,13 @@
 
 When doing unit tests for EF Core, we can use in-memory-database to test functionalities but sometimes we needs to use SQL features. That's where SQLite comes into play.
 
+When running the tests, 2 tests will fail:
+
+- InMemoryDbTests.ShouldFailWhenIncludeIsNotUsed
+- InMemoryDbTests.ShouldNotBeAbleToExecuteSql
+
+This is intended to demonstrate when and why EF Core In-Memory DB provider won't work and SQLite is a better choice.
+
 ## Original content for this source code
 
 Original blog post: [.NET Core complex EF Core unit testing](https://jkdev.me/ef-core-unit-tests/) (February 2018)
