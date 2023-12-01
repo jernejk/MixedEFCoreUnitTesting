@@ -1,3 +1,5 @@
+**UPDATE December 2023:** Updated for .NET 8! While the talk is originally for EF Core 2.1, majority of the points as well as code is still relevant in EF Core 8!
+
 # Mixed EF Core unit testing with in-memory and SQLite DBs
 
 When doing unit tests for EF Core, we can use in-memory-database to test functionalities but sometimes we needs to use SQL features. That's where SQLite comes into play.
