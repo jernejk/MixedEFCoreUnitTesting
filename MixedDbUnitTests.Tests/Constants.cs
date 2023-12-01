@@ -1,7 +1,6 @@
-﻿namespace MixedDbUnitTests.Tests
+﻿namespace MixedDbUnitTests.Tests;
+
+public static class Constants
 {
-    public static class Constants
-    {
-        public const int NumberOfEntitiesToAdd = 10_000;
-    }
+    public const int NumberOfEntitiesToAdd = 100_000;
 }
